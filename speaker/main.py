@@ -61,11 +61,11 @@ connected = False
 while True:
     while not p.is_connected():
         connected = False
-        play_sound("a1.wav")
+        play_sound("BLE_waiting.wav")
         print("Waiting for central ...")
         time.sleep(1)
 
     if not connected:  # flag not yet set
         connected = True
-        play_sound("c1.wav")
+        play_sound("BLE_success.wav")
     time.sleep(1)
