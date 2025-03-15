@@ -30,7 +30,7 @@ else:  # assume 32 bits
 def make_tone(rate, frequency):
     # create a buffer containing the pure tone samples
     array_length = rate // frequency
-    volume_reduction_factor = 32
+    volume_reduction_factor = 16
     range = pow(2, SAMPLE_SIZE_IN_BITS) // 2 // volume_reduction_factor
     samples_int = []
     for i in range(array_length):
@@ -76,9 +76,17 @@ audio_out = I2S(
 )
 
 
-samples_int_a = make_tone(SAMPLE_RATE_IN_HZ, 441)
-samples_int_c = make_tone(SAMPLE_RATE_IN_HZ, 761)
-samples = generate_byte_array_from_ints(samples_int_c)
+samples_int_f1 = make_tone(SAMPLE_RATE_IN_HZ, 350)
+samples_int_g1 = make_tone(SAMPLE_RATE_IN_HZ, 392)
+samples_int_a1 = make_tone(SAMPLE_RATE_IN_HZ, 441)
+samples_int_ais1 = make_tone(SAMPLE_RATE_IN_HZ, 466)
+samples_int_c2 = make_tone(SAMPLE_RATE_IN_HZ, 523)
+samples = generate_byte_array_from_ints(samples_int_f1)
+print(len(samples_int_f1))
+print(len(samples_int_g1))
+print(len(samples_int_a1))
+print(len(samples_int_ais1))
+print(len(samples_int_c2))
 
 async def thread_function():
     global samples
@@ -89,13 +97,22 @@ async def thread_function():
         print(counter)
         mixed_array = []
         for i in range(100):
-            value_a = 0
-            value_c = 0
-            if counter > 200:
-                value_c = samples_int_c[i % len(samples_int_c)]
-            if counter < 200 or counter > 400:
-                value_a = samples_int_a[i % len(samples_int_a)]
-            mixed_array.append(value_a + value_c)
+            value_f1 = 0
+            value_g1 = 0
+            value_a1 = 0
+            value_ais1 = 0
+            value_c2 = 0
+            if counter < 200:
+                value_f1 = samples_int_f1[i % len(samples_int_f1)]
+            if counter > 200 and counter < 400:
+                value_g1 = samples_int_g1[i % len(samples_int_g1)]
+            if counter > 400 and counter < 600:
+                value_a1 = samples_int_a1[i % len(samples_int_a1)]
+            if counter > 600 and counter < 800:
+                value_ais1 = samples_int_ais1[i % len(samples_int_ais1)]
+            if counter > 800 and counter < 1000:
+                value_c2 = samples_int_c2[i % len(samples_int_c2)]
+            mixed_array.append(value_f1 + value_g1 + value_a1 + value_ais1 + value_c2)
         samples = generate_byte_array_from_ints(mixed_array)
         await asyncio.sleep(1/100)
 
